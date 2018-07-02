@@ -4,6 +4,11 @@ const path = require('path')
 const { promisify } = require('util')
 
 class MavenLooperPublisher {
+  constructor () {
+    this.name = 'maven-looper'
+    this.platforms = ['android']
+  }
+
   publish ({
     containerPath,
     containerVersion,
@@ -59,9 +64,5 @@ class MavenLooperPublisher {
       })
   }
 }
-
-MavenLooperPublisher.name = 'maven-looper'
-
-MavenLooperPublisher.platforms = ['android']
 
 module.exports.default = MavenLooperPublisher

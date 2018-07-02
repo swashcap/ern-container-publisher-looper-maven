@@ -9,8 +9,10 @@ const clean = () => promisify(rimraf)(path.join(__dirname, '.tmp'))
 const writeFile = promisify(fs.writeFile)
 const MavenLooperPublisher = require('./index.js').default
 
-assert(Array.isArray(MavenLooperPublisher.platforms))
-assert(MavenLooperPublisher.name)
+const publisher = new MavenLooperPublisher()
+
+assert(Array.isArray(publisher.platforms))
+assert(publisher.name)
 
 promisify(mkdirp)(path.join(__dirname, '.tmp/lib'))
   .then(() => Promise.all([
@@ -18,7 +20,7 @@ promisify(mkdirp)(path.join(__dirname, '.tmp/lib'))
     writeFile(path.join(__dirname, '.tmp/lib/build.gradle'), '')
   ]))
   .then(() => promisify(fs.chmod)(path.join(__dirname, '.tmp/gradlew'), '0755'))
-  .then(() => new MavenLooperPublisher().publish({
+  .then(() => publisher.publish({
     containerPath: path.join(__dirname, '.tmp'),
     containerVersion: '1.2.3',
     url: 'http://localhost:8081/repository/contents/hosted',
