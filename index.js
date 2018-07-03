@@ -52,7 +52,7 @@ class MavenLooperPublisher {
         console.log('Executing gradlew lib:uploadArchives')
 
         return new Promise((resolve, reject) => {
-          const gradlew = cp.spawn('./gradlew', ['lib:uploadArchives', '--debug'])
+          const gradlew = cp.spawn(path.join(containerPath, 'gradlew'), ['lib:uploadArchives', '--debug'])
             .on('error', reject)
             .on('exit', (code) => {
               if (code !== 0) {
