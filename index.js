@@ -49,21 +49,20 @@ class MavenLooperPublisher {
     )
       .then(() => {
         console.log(`Wrote configuration to ${gradlePath}`)
-        console.log('Executing gradlew lib:uploadArchives')
+        console.log('Executing ./gradlew lib:uploadArchives')
 
         return new Promise((resolve, reject) => {
-          const gradlew = cp.spawn(path.join(containerPath, 'gradlew'), ['lib:uploadArchives', '--debug'])
-            .on('error', reject)
-            .on('exit', (code) => {
-              if (code !== 0) {
-                reject(new Error(`gradlew lib:uploadArchives exited with code ${code}`))
-              }
+          cp.exec('./gradlew lib:uploadArchives --debug', (error, stdout, stderr) => {
+            console.error(stderr)
+            console.log(stdout)
 
+            if (error) {
+              reject(error)
+            } else {
               console.log('gradlew lib:uploadArchives exited successfully')
               resolve()
-            })
-          gradlew.stdout.pipe(process.stdout)
-          gradlew.stderr.pipe(process.stderr)
+            }
+          })
         })
       })
   }
