@@ -15,6 +15,7 @@ class MavenLooperPublisher {
     containerVersion,
     url
   }) {
+    const oldWD = process.cwd()
     const artifactId = process.env.MAVEN_ARTIFACT_ID
     const groupId = process.env.MAVEN_GROUP_ID
     assert(artifactId)
@@ -49,12 +50,16 @@ class MavenLooperPublisher {
     )
       .then(() => {
         console.log(`Wrote configuration to ${gradlePath}`)
-        console.log('Executing ./gradlew lib:uploadArchives')
+        console.log(`Executing ./gradlew lib:uploadArchives in ${containerPath}`)
+
+        process.chdir(containerPath)
 
         return new Promise((resolve, reject) => {
           cp.exec('./gradlew lib:uploadArchives --debug', (error, stdout, stderr) => {
             console.error(stderr)
             console.log(stdout)
+
+            process.chdir(oldWD)
 
             if (error) {
               reject(error)

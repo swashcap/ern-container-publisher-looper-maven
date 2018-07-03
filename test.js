@@ -5,10 +5,7 @@ const path = require('path')
 const rimraf = require('rimraf')
 const { promisify } = require('util')
 
-const clean = () => {
-  process.chdir(__dirname)
-  return promisify(rimraf)(path.join(__dirname, '.tmp'))
-}
+const clean = () => promisify(rimraf)(path.join(__dirname, '.tmp'))
 const writeFile = promisify(fs.writeFile)
 const MavenLooperPublisher = require('./index.js').default
 
@@ -27,7 +24,6 @@ promisify(mkdirp)(path.join(__dirname, '.tmp/lib'))
     // TODO: exec with custom env vars instead of mutating process.env
     process.env.MAVEN_ARTIFACT_ID = 'my-lovely-container'
     process.env.MAVEN_GROUP_ID = 'com.walmartlabs.looper'
-    process.chdir(path.join(__dirname, '.tmp'))
 
     return publisher.publish({
       containerPath: path.join(__dirname, '.tmp'),
