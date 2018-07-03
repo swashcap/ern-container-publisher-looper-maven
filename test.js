@@ -20,15 +20,17 @@ promisify(mkdirp)(path.join(__dirname, '.tmp/lib'))
     writeFile(path.join(__dirname, '.tmp/lib/build.gradle'), '')
   ]))
   .then(() => promisify(fs.chmod)(path.join(__dirname, '.tmp/gradlew'), '0755'))
-  .then(() => publisher.publish({
-    containerPath: path.join(__dirname, '.tmp'),
-    containerVersion: '1.2.3',
-    url: 'http://localhost:8081/repository/contents/hosted',
-    extra: {
-      artifactId: 'my-lovely-container',
-      groupId: 'com.walmartlabs.looper'
-    }
-  }))
+  .then(() => {
+    // TODO: exec with custom env vars instead of mutating process.env
+    process.env.MAVEN_ARTIFACT_ID = 'my-lovely-container'
+    process.env.MAVEN_GROUP_ID = 'com.walmartlabs.looper'
+
+    return publisher.publish({
+      containerPath: path.join(__dirname, '.tmp'),
+      containerVersion: '1.2.3',
+      url: 'http://localhost:8081/repository/contents/hosted'
+    })
+  })
   .then(() => promisify(fs.readFile)(path.join(__dirname, '.tmp/lib/build.gradle'), 'utf-8'))
   .then((gradleContents) => {
     assert(/pom\.version = '1.2.3'/.test(gradleContents))

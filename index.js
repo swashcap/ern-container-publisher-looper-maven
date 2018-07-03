@@ -1,3 +1,4 @@
+const assert = require('assert')
 const cp = require('child_process')
 const fs = require('fs')
 const path = require('path')
@@ -12,9 +13,12 @@ class MavenLooperPublisher {
   publish ({
     containerPath,
     containerVersion,
-    url,
-    extra: { artifactId, groupId }
+    url
   }) {
+    const artifactId = process.env.MAVEN_ARTIFACT_ID
+    const groupId = process.env.MAVEN_GROUP_ID
+    assert(artifactId)
+    assert(groupId)
     console.log('maven-looper publishing:', url, artifactId, groupId, containerVersion)
     const gradlePath = path.join(containerPath, 'lib/build.gradle')
     console.log(`Writing configuration to ${gradlePath}`)
