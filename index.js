@@ -55,7 +55,7 @@ class MavenLooperPublisher {
         process.chdir(containerPath)
 
         return new Promise((resolve, reject) => {
-          const gradlew = cp.spawn('./gradlew', ['lib:uploadArchives', '--debug'])
+          const gradlew = cp.spawn('./gradlew', ['lib:uploadArchives', '--info', '--debug', '|', 'tee', '-a', 'gradlelog.txt'])
             .on('error', (error) => {
               process.chdir(oldWD)
               reject(error)
