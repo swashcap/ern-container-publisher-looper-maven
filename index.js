@@ -55,19 +55,24 @@ class MavenLooperPublisher {
         process.chdir(containerPath)
 
         return new Promise((resolve, reject) => {
-          cp.exec('./gradlew lib:uploadArchives --debug', (error, stdout, stderr) => {
-            console.error(stderr)
-            console.log(stdout)
-
-            process.chdir(oldWD)
-
-            if (error) {
+          const gradlew = cp.spawn('./gradlew', ['lib:uploadArchives', '--debug'])
+            .on('error', (error) => {
+              process.chdir(oldWD)
               reject(error)
-            } else {
-              console.log('gradlew lib:uploadArchives exited successfully')
-              resolve()
-            }
-          })
+            })
+            .on('exit', (code) => {
+              process.chdir(oldWD)
+
+              if (code !== 0) {
+                reject(new Error(`gradlew lib:uploadArchives exited with code ${code}`))
+              } else {
+                console.log('gradlew lib:uploadArchives exited successfully')
+                resolve()
+              }
+            })
+
+          gradlew.stderr.pipe(process.stderr)
+          gradlew.stdout.pipe(process.stdout)
         })
       })
   }
