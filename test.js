@@ -40,5 +40,6 @@ promisify(mkdirp)(path.join(__dirname, '.tmp/lib'))
   })
   .then(clean)
   .catch(error => clean().then(() => {
-    throw error
+    console.error(error)
+    process.exit(1)
   }))
