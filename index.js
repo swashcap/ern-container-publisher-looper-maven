@@ -25,28 +25,28 @@ class MavenLooperPublisher {
     console.log(`Writing configuration to ${gradlePath}`)
 
     return promisify(fs.appendFile)(gradlePath, `
-  apply plugin: 'maven'
-  
-  task androidSourcesJar(type: Jar) {
-      classifier = 'sources'
-      from android.sourceSets.main.java.srcDirs
-      include '**/*.java'
-  }
-  
-  artifacts {
-      archives androidSourcesJar
-  }
-  
-  uploadArchives {
-      repositories {
-          mavenDeployer {
-              pom.version = '${containerVersion}'
-              pom.artifactId = '${artifactId}'
-              pom.groupId = '${groupId}'
-              repository(url: '${url}')
-          }
-      }
-  }`
+apply plugin: 'maven'
+
+task androidSourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.srcDirs
+    include '**/*.java'
+}
+
+artifacts {
+    archives androidSourcesJar
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            pom.version = '${containerVersion}'
+            pom.artifactId = '${artifactId}'
+            pom.groupId = '${groupId}'
+            repository(url: '${url}')
+        }
+    }
+}`
     )
       .then(() => {
         console.log(`Wrote configuration to ${gradlePath}`)
