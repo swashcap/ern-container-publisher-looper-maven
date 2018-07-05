@@ -4,6 +4,8 @@ const fs = require('fs')
 const path = require('path')
 const { promisify } = require('util')
 
+const appendFile = promisify(fs.appendFile)
+
 class MavenLooperPublisher {
   constructor () {
     this.name = 'maven-looper'
@@ -22,9 +24,12 @@ class MavenLooperPublisher {
     assert(groupId)
     console.log('maven-looper publishing:', url, artifactId, groupId, containerVersion)
     const gradlePath = path.join(containerPath, 'lib/build.gradle')
+    const gradlePropertiesPath = path.join(containerPath, 'gradle/wrapper/gradle-wrapper.properties')
     console.log(`Writing configuration to ${gradlePath}`)
+    console.log(`Writing properties to ${gradlePropertiesPath}`)
 
-    return promisify(fs.appendFile)(gradlePath, `
+    return Promise.all([
+      appendFile(gradlePath, `
 apply plugin: 'maven'
 
 task androidSourcesJar(type: Jar) {
@@ -47,9 +52,18 @@ uploadArchives {
         }
     }
 }`
-    )
+      ),
+      appendFile(gradlePropertiesPath, `
+systemProp.http.proxyHost=proxy.wal-mart.com
+systemProp.http.proxyPort=9080
+systemProp.https.proxyHost=proxy.wal-mart.com
+systemProp.https.proxyPort=9080
+`
+      )
+    ])
       .then(() => {
         console.log(`Wrote configuration to ${gradlePath}`)
+        console.log(`Wrote properties to ${gradlePropertiesPath}`)
         console.log(`Executing ./gradlew lib:uploadArchives in ${containerPath}`)
 
         process.chdir(containerPath)
