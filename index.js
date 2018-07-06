@@ -5,6 +5,12 @@ const path = require('path')
 const { promisify } = require('util')
 
 const appendFile = promisify(fs.appendFile)
+const gradleProxySettings = `
+systemProp.http.proxyHost=proxy.wal-mart.com
+systemProp.http.proxyPort=9080
+systemProp.https.proxyHost=proxy.wal-mart.com
+systemProp.https.proxyPort=9080
+`
 
 class MavenLooperPublisher {
   constructor () {
@@ -24,9 +30,11 @@ class MavenLooperPublisher {
     assert(groupId)
     console.log('maven-looper publishing:', url, artifactId, groupId, containerVersion)
     const gradlePath = path.join(containerPath, 'lib/build.gradle')
-    const gradlePropertiesPath = path.join(containerPath, 'gradle/wrapper/gradle-wrapper.properties')
+    const gradlePropertiesPath = path.join(containerPath, 'gradle.properties')
+    const gradleWrapperPropertiesPath = path.join(containerPath, 'gradle/wrapper/gradle-wrapper.properties')
     console.log(`Writing configuration to ${gradlePath}`)
-    console.log(`Writing properties to ${gradlePropertiesPath}`)
+    console.log(`Writing Gradle config to ${gradlePropertiesPath}`)
+    console.log(`Writing Gradle config to ${gradleWrapperPropertiesPath}`)
 
     return Promise.all([
       appendFile(gradlePath, `
@@ -53,17 +61,13 @@ uploadArchives {
     }
 }`
       ),
-      appendFile(gradlePropertiesPath, `
-systemProp.http.proxyHost=proxy.wal-mart.com
-systemProp.http.proxyPort=9080
-systemProp.https.proxyHost=proxy.wal-mart.com
-systemProp.https.proxyPort=9080
-`
-      )
+      appendFile(gradlePropertiesPath, gradleProxySettings),
+      appendFile(gradleWrapperPropertiesPath, gradleProxySettings)
     ])
       .then(() => {
         console.log(`Wrote configuration to ${gradlePath}`)
-        console.log(`Wrote properties to ${gradlePropertiesPath}`)
+        console.log(`Wrote Gradle config to ${gradlePropertiesPath}`)
+        console.log(`Wrote Gradle config to ${gradleWrapperPropertiesPath}`)
         console.log(`Executing ./gradlew lib:uploadArchives in ${containerPath}`)
 
         process.chdir(containerPath)

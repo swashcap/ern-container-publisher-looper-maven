@@ -23,6 +23,7 @@ Promise.all([
   .then(() => Promise.all([
     writeFile(path.join(__dirname, '.tmp/gradlew'), '#!/bin/sh\necho "$@"'),
     writeFile(path.join(__dirname, '.tmp/lib/build.gradle'), ''),
+    writeFile(path.join(__dirname, '.tmp/gradle.properties'), ''),
     writeFile(path.join(__dirname, '.tmp/gradle/wrapper/gradle-wrapper.properties'), '')
   ]))
   .then(() => promisify(fs.chmod)(path.join(__dirname, '.tmp/gradlew'), '0755'))
@@ -39,14 +40,17 @@ Promise.all([
   })
   .then(() => Promise.all([
     readFile(path.join(__dirname, '.tmp/lib/build.gradle'), 'utf-8'),
+    readFile(path.join(__dirname, '.tmp/gradle.properties'), 'utf-8'),
     readFile(path.join(__dirname, '.tmp/gradle/wrapper/gradle-wrapper.properties'), 'utf-8')
   ]))
-  .then(([gradleContents, propertiesContents]) => {
+  .then(([gradleContents, propertiesContents, wrapperPropertiesContents]) => {
+    const proxyPattern = /systemProp\.http\.proxyHost=proxy\.wal-mart\.com/
     assert(/pom\.version = '1.2.3'/.test(gradleContents))
     assert(/pom\.artifactId = 'my-lovely-container'/.test(gradleContents))
     assert(/pom\.groupId = 'com.walmartlabs.looper'/.test(gradleContents))
     assert(/repository\(url: 'http:\/\/localhost:8081\/repository\/contents\/hosted'\)/.test(gradleContents))
-    assert(/systemProp\.http\.proxyHost=proxy\.wal-mart\.com/.test(propertiesContents))
+    assert(proxyPattern.test(propertiesContents))
+    assert(proxyPattern.test(wrapperPropertiesContents))
   })
   .then(clean)
   .catch(error => clean().then(() => {
