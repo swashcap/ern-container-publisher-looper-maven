@@ -44,7 +44,7 @@ Promise.all([
     readFile(path.join(__dirname, '.tmp/gradle/wrapper/gradle-wrapper.properties'), 'utf-8')
   ]))
   .then(([gradleContents, propertiesContents, wrapperPropertiesContents]) => {
-    const proxyPattern = /systemProp\.http\.proxyHost=proxy\.wal-mart\.com/
+    const proxyPattern = /systemProp\.http\.proxyHost=sysproxy\.wal-mart\.com/
     assert(/pom\.version = '1.2.3'/.test(gradleContents))
     assert(/pom\.artifactId = 'my-lovely-container'/.test(gradleContents))
     assert(/pom\.groupId = 'com.walmartlabs.looper'/.test(gradleContents))

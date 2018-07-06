@@ -6,10 +6,12 @@ const { promisify } = require('util')
 
 const appendFile = promisify(fs.appendFile)
 const gradleProxySettings = `
-systemProp.http.proxyHost=proxy.wal-mart.com
-systemProp.http.proxyPort=9080
-systemProp.https.proxyHost=proxy.wal-mart.com
-systemProp.https.proxyPort=9080
+systemProp.http.proxyHost=sysproxy.wal-mart.com
+systemProp.http.proxyPort=8080
+systemProp.http.nonProxyHosts=*.walmart.com|*.wal-mart.com|localhost
+systemProp.https.proxyHost=sysproxy.wal-mart.com
+systemProp.https.proxyPort=8080
+systemProp.https.nonProxyHosts=*.walmart.com|*.wal-mart.com|localhost
 `
 
 class MavenLooperPublisher {
