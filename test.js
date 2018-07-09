@@ -42,7 +42,7 @@ Promise.all([
     readFile(path.join(__dirname, '.tmp/lib/build.gradle'), 'utf-8'),
     readFile(path.join(__dirname, '.tmp/gradle.properties'), 'utf-8'),
     readFile(path.join(__dirname, '.tmp/gradle/wrapper/gradle-wrapper.properties'), 'utf-8'),
-    promisify(fs.stat)(path.join(__dirname, '.tmp/.mvn/settings.xml'))
+    promisify(fs.stat)(path.join(__dirname, '.tmp/extensions.xml'))
   ]))
   .then(([
     gradleContents,
