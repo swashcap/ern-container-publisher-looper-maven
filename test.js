@@ -29,8 +29,8 @@ Promise.all([
   .then(() => promisify(fs.chmod)(path.join(__dirname, '.tmp/gradlew'), '0755'))
   .then(() => {
     // TODO: exec with custom env vars instead of mutating process.env
-    process.env.MAVEN_ARTIFACT_ID = 'my-lovely-container'
-    process.env.MAVEN_GROUP_ID = 'com.walmartlabs.looper'
+    process.env.LOOPER_MAVEN_POM_ARTIFACTID = 'my-lovely-container'
+    process.env.LOOPER_MAVEN_POM_GROUPID = 'com.walmartlabs.looper'
 
     return publisher.publish({
       containerPath: path.join(__dirname, '.tmp'),
@@ -41,9 +41,15 @@ Promise.all([
   .then(() => Promise.all([
     readFile(path.join(__dirname, '.tmp/lib/build.gradle'), 'utf-8'),
     readFile(path.join(__dirname, '.tmp/gradle.properties'), 'utf-8'),
-    readFile(path.join(__dirname, '.tmp/gradle/wrapper/gradle-wrapper.properties'), 'utf-8')
+    readFile(path.join(__dirname, '.tmp/gradle/wrapper/gradle-wrapper.properties'), 'utf-8'),
+    promisify(fs.stat)(path.join(__dirname, '.tmp/.mvn/settings.xml'))
   ]))
-  .then(([gradleContents, propertiesContents, wrapperPropertiesContents]) => {
+  .then(([
+    gradleContents,
+    propertiesContents,
+    wrapperPropertiesContents,
+    stats
+  ]) => {
     const proxyPattern = /systemProp\.http\.proxyHost=sysproxy\.wal-mart\.com/
     assert(/pom\.version = '1.2.3'/.test(gradleContents))
     assert(/pom\.artifactId = 'my-lovely-container'/.test(gradleContents))
@@ -51,6 +57,7 @@ Promise.all([
     assert(/repository\(url: 'http:\/\/localhost:8081\/repository\/contents\/hosted'\)/.test(gradleContents))
     assert(proxyPattern.test(propertiesContents))
     assert(proxyPattern.test(wrapperPropertiesContents))
+    assert(stats.isFile())
   })
   .then(clean)
   .catch(error => clean().then(() => {

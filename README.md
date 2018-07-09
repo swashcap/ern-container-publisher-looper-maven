@@ -4,6 +4,6 @@ An [electrode-native publisher](https://native.electrode.io/reference/glossary#c
 
 This publisher requires the following environment variables:
 
-* `MAVEN_ARTIFACT_ID`: the `artifactId` of the package
-* `MAVEN_GROUP_ID`: the `groupId` of the package
+* `LOOPER_MAVEN_POM_ARTIFACTID`: the `artifactId` of the package
+* `LOOPER_MAVEN_POM_GROUPID`: the `groupId` of the package
 
