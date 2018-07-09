@@ -19,4 +19,4 @@ uploadArchives {
             repository(url: '${url}')
         }
     }
-}`
+}
