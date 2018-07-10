@@ -31,5 +31,5 @@ echo "Writing configuration to $PWD/extensions.xml"
 cp "$DIRNAME/files/extensions.xml" .
 echo "Wrote configuration to $PWD/extensions.xml"
 
-./gradlew lib:uploadArchives --info --debug
+./gradlew lib:uploadArchives --info --debug --full-stacktrace
 
