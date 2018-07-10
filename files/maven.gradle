@@ -1,44 +1,28 @@
-apply plugin: 'groovy'
-apply plugin: 'java'
-apply plugin: 'maven-publish'
-apply plugin: 'maven-publish-auth'
 
-buildscript {
-    dependencies {
-        classpath 'org.hibernate.build.gradle:gradle-maven-publish-auth:2.0.1'
-    }
+apply plugin: 'maven'
 
-    repositories {
-        mavenCentral()
-    }
-}
-
-task sourcesJar(type: Jar) {
+task androidSourcesJar(type: Jar) {
     classifier = 'sources'
     from android.sourceSets.main.java.srcDirs
     include '**/*.java'
 }
 
 artifacts {
-    archives sourcesJar
+    archives androidSourcesJar
 }
 
-publishing {
-    publications {
-        maven(MavenPublication) {
-            from components.java
-            artifact sourcesJar
-
-            groupId 'com.walmartlabs.ern'
-            artifactId '${artifactId}'
-            version '${containerVersion}'
-        }
-    }
-
+uploadArchives {
     repositories {
-        maven {
-            name 'pangaea_snapshots'
-            url 'https://repository.walmart.com/content/repositories/pangaea_snapshots'
+        mavenDeployer {
+            pom.version = '1.0.0'
+            pom.artifactId = 'walmart-ern-container'
+            pom.groupId = 'com.walmartlabs.ern'
+            repository(url: 'https://repository.walmart.com/content/repositories/pangaea_snapshots') {
+                authentication(
+                    userName: System.getenv('NEXUS_USERNAME'),
+                    password: System.getenv('NEXUS_PASSWORD')
+                )
+            }
         }
     }
 }
