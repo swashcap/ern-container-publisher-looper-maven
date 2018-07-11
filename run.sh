@@ -27,9 +27,5 @@ echo "Writing configuration to $PWD/gradle/wrapper/gradle-wrapper.properties"
 cat "$DIRNAME/files/gradle-proxy-settings.properties" >> gradle/wrapper/gradle-wrapper.properties
 echo "Wrote configuration to $PWD/gradle/wrapper/gradle-wrapper.properties"
 
-echo "Writing configuration to $PWD/extensions.xml"
-cp "$DIRNAME/files/extensions.xml" .
-echo "Wrote configuration to $PWD/extensions.xml"
-
 ./gradlew lib:uploadArchives --info --debug --full-stacktrace
 

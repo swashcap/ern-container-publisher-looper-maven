@@ -41,14 +41,12 @@ Promise.all([
   .then(() => Promise.all([
     readFile(path.join(__dirname, '.tmp/lib/build.gradle'), 'utf-8'),
     readFile(path.join(__dirname, '.tmp/gradle.properties'), 'utf-8'),
-    readFile(path.join(__dirname, '.tmp/gradle/wrapper/gradle-wrapper.properties'), 'utf-8'),
-    promisify(fs.stat)(path.join(__dirname, '.tmp/extensions.xml'))
+    readFile(path.join(__dirname, '.tmp/gradle/wrapper/gradle-wrapper.properties'), 'utf-8')
   ]))
   .then(([
     gradleContents,
     propertiesContents,
-    wrapperPropertiesContents,
-    stats
+    wrapperPropertiesContents
   ]) => {
     const proxyPattern = /systemProp\.http\.proxyHost=sysproxy\.wal-mart\.com/
     assert(/pom\.version = '1.2.3'/.test(gradleContents))
@@ -57,7 +55,6 @@ Promise.all([
     assert(/repository\(url: 'http:\/\/localhost:8081\/repository\/contents\/hosted'\)/.test(gradleContents))
     assert(proxyPattern.test(propertiesContents))
     assert(proxyPattern.test(wrapperPropertiesContents))
-    assert(stats.isFile())
   })
   .then(clean)
   .catch(error => clean().then(() => {
