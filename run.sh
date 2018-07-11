@@ -12,7 +12,7 @@ sanitize_periods() {
   echo "$1" | sed 's/\./\\./g'
 }
 
-SED_COMMAND="s#\${containerVersion}#$(sanitize_periods "$LOOPER_MAVEN_POM_VERSION")#"
+SED_COMMAND="s#\${version}#$(sanitize_periods "$LOOPER_MAVEN_POM_VERSION")#"
 SED_COMMAND="$SED_COMMAND; s#\${artifactId}#$(sanitize_periods "$LOOPER_MAVEN_POM_ARTIFACTID")#"
 SED_COMMAND="$SED_COMMAND; s#\${groupId}#$(sanitize_periods "$LOOPER_MAVEN_POM_GROUPID")#"
 SED_COMMAND="$SED_COMMAND; s#\${url}#$(sanitize_periods "$LOOPER_MAVEN_REPOSITORY_URL")#"

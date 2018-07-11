@@ -14,10 +14,10 @@ artifacts {
 uploadArchives {
     repositories {
         mavenDeployer {
-            pom.version = '1.0.0'
-            pom.artifactId = 'walmart-ern-container'
-            pom.groupId = 'com.walmartlabs.ern'
-            repository(url: 'https://repository.walmart.com/content/repositories/pangaea_snapshots') {
+            pom.version = '${version}'
+            pom.artifactId = '${artifactId}'
+            pom.groupId = '${groupId}'
+            repository(url: '${url}') {
                 authentication(
                     userName: System.getenv('NEXUS_USERNAME'),
                     password: System.getenv('NEXUS_PASSWORD')
